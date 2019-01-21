@@ -30,6 +30,8 @@ const (
 	left  int8 = 3
 )
 
+var pause = false
+
 type point struct {
 	//TODO: make this float, so its easier to scale with speeds and FPS
 	x int8
@@ -151,6 +153,16 @@ func main() {
 	//Tick Intervall s = 600 msecs/ 30 FPS
 	ticker := time.NewTicker(600 / FPS * time.Millisecond)
 
+	/*
+		sends/receives different signals
+			 0 - change direction to: up
+			 1 - change direction to: right
+			 2 - change direction to: down
+			 3 - change direction to: left
+			 -1 - break mainloop aka. stop program
+			 -2 - pause the game
+
+	*/
 	c := make(chan int8)
 
 	go checkKeyInput(c)
@@ -160,7 +172,11 @@ mainloop:
 		select {
 		case dir := <-c:
 			switch dir {
-			//abort
+			//pause
+			case -2:
+				pause = !pause
+				update(&s, &table)
+				//abort
 			case -1:
 				break mainloop
 				// up
@@ -195,9 +211,11 @@ mainloop:
 }
 
 func update(s *Snake, table *Game_table) {
-	s.move()
-	table.updateGameTable(*s)
-	table.drawTable()
+	if pause == false {
+		s.move()
+		table.updateGameTable(*s)
+		table.drawTable()
+	}
 }
 
 func checkKeyInput(c chan int8) {
@@ -212,9 +230,8 @@ func checkKeyInput(c chan int8) {
 				c <- 2
 			} else if ev.Key == termbox.KeyArrowLeft {
 				c <- 3
-			} else if ev.Key == termbox.KeyF2 {
-				c <- -1
-				break
+			} else if ev.Key == termbox.KeyCtrlP {
+				c <- -2
 			} else if ev.Key == termbox.KeyEsc {
 				c <- -1
 				break
