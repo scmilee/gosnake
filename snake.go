@@ -13,25 +13,16 @@ const (
 	left  int8 = 3
 )
 
-type Point struct {
-	//TODO: make this float, so its easier to scale with speeds and FPS
-	x int
-	y int
-}
-
 type Snake struct {
-	body []Point
-	//speed is a value between 0 and 100
-	speed     uint8
+	body      []Point
 	direction int8
 	score     int
 }
 
 func (s *Snake) resetSnake() {
-	s.speed = 1
 	s.score = 0
 	s.direction = right
-	s.body = append(s.body, Point{table_height / 2, table_width / 2})
+	s.body = append(s.body, Point{table_width / 2, table_height / 2})
 }
 
 func (s *Snake) move() {

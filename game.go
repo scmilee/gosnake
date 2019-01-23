@@ -9,17 +9,19 @@ import (
 )
 
 //make this variable
-const table_height = 30
-const table_width = 30
-const FPS = 5
-const body_gain = 3
-const fruit_spawn_timer = 4000
+var table_height int = 30
+var table_width int = 60
+
+var FPS int = 5
+var body_gain int = 3
+var fruit_spawn_timer = 4000
+
 const head_char = 'O'
 const body_char = 'o'
 const wall_char = 'X'
 const fruit_char = '0'
 
-const game_title = "GO-SNAKE"
+var game_title = "GO-SNAKE"
 
 const (
 	easy       int8 = 1
@@ -27,6 +29,11 @@ const (
 	hard       int8 = 3
 	impossible int8 = 4
 )
+
+type Point struct {
+	x int
+	y int
+}
 
 var game_difficulty int8 = easy
 
@@ -47,27 +54,27 @@ const (
 var game_state int8 = st_not_started
 
 //Game Table of default 50x50 Size
-type Game_table [table_height][table_width]byte
+type Game_table [][]byte
 
 func (table *Game_table) updateGameTable(s Snake, fruit *Fruit) {
-	for x := range *table {
-		for y := range (*table)[x] {
+	for y := range *table {
+		for x := range (*table)[y] {
 			// left wall
 			if x == 0 {
-				(*table)[x][y] = wall_char
+				(*table)[y][x] = wall_char
 				// right wall
-			} else if x == table_height-1 {
-				(*table)[x][y] = wall_char
+			} else if x == table_width-1 {
+				(*table)[y][x] = wall_char
 				// top wall
 			} else if y == 0 {
-				(*table)[x][y] = wall_char
+				(*table)[y][x] = wall_char
 				// botoom wall
-			} else if y == table_width-1 {
-				(*table)[x][y] = wall_char
+			} else if y == table_height-1 {
+				(*table)[y][x] = wall_char
 				// fill rest with spaces
 				//TODO replace with current player and objects in the map
 			} else {
-				(*table)[x][y] = ' '
+				(*table)[y][x] = ' '
 				for i := 1; i < len(s.body); i++ {
 					(*table)[s.body[i].y][s.body[i].x] = body_char
 				}
@@ -87,8 +94,28 @@ func main() {
 		panic(err)
 	}
 	defer termbox.Close()
+
 	game_state = st_running
 	game_difficulty = easy
+
+	switch game_difficulty {
+	case easy:
+		body_gain = 1
+		FPS = 3
+		game_title += " - EASY"
+	case medium:
+		body_gain = 3
+		FPS = 5
+		game_title += " - MEDIUM"
+	case hard:
+		body_gain = 10
+		FPS = 7
+		game_title += " - HARD"
+	case impossible:
+		body_gain = 15
+		FPS = 10
+		game_title += " - IMPOSSIBLE"
+	}
 
 	// seed random number generator
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -103,7 +130,7 @@ func main() {
 	table.drawTable(&s)
 
 	//Tick Intervall s = 600 msecs/ 30 FPS
-	ticker_fps := time.NewTicker(600 / FPS * time.Millisecond)
+	ticker_fps := time.NewTicker(time.Duration(600/FPS) * time.Millisecond)
 
 	/*
 		sends/receives different signals
@@ -111,8 +138,6 @@ func main() {
 			 1 - change direction to: right
 			 2 - change direction to: down
 			 3 - change direction to: left
-			 -1 - break mainloop aka. stop program
-			 -2 - pause the game
 	*/
 	c := make(chan int8)
 	fruit_spawn := make(chan bool)
@@ -219,7 +244,7 @@ func checkKeyInput(c chan int8) {
 }
 
 func spawnFruitTicker(fruit_chan chan bool) {
-	fruit_ticker := time.NewTicker(fruit_spawn_timer * time.Millisecond)
+	fruit_ticker := time.NewTicker(time.Duration(fruit_spawn_timer) * time.Millisecond)
 	for range fruit_ticker.C {
 		fruit_chan <- true
 	}
@@ -240,28 +265,9 @@ func (table Game_table) drawTable(s *Snake) {
 }
 
 func (table *Game_table) resetGameTable() {
-	for x := range table {
-		for y := range table[x] {
-			// left wall
-			if x == 0 {
-				table[x][y] = wall_char
-
-				// right wall
-			} else if x == table_height-1 {
-				table[x][y] = wall_char
-
-				// top wall
-			} else if y == 0 {
-				table[x][y] = wall_char
-
-				// botoom wall
-			} else if y == table_width-1 {
-				table[x][y] = wall_char
-
-				// fill rest with spaces
-			} else {
-				table[x][y] = ' '
-			}
-		}
+	//set size of Game_table
+	*table = make([][]byte, table_height)
+	for i := range *table {
+		(*table)[i] = make([]byte, table_width)
 	}
 }
