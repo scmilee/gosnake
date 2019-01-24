@@ -1,21 +1,26 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/ahmetalpbalkan/go-cursor"
 	"github.com/nsf/termbox-go"
 	"math/rand"
+	"strconv"
+	"strings"
 	"time"
 )
 
 //make this variable
-var table_height int = 30
-var table_width int = 60
+var table_height int = 0
+var table_width int = 0
 
 var FPS int = 5
 var body_gain int = 3
 var fruit_spawn_timer = 4000
 
+const standard_width = 40
+const standard_height = 20
 const head_char = 'O'
 const body_char = 'o'
 const wall_char = 'X'
@@ -95,21 +100,66 @@ func main() {
 	}
 	defer termbox.Close()
 
+	//get command line flags
+	//	-difficulty=...
+	//	-size=AxB
+	diffFlag := flag.String("difficulty", "medium", "This sets the difficulty for the game. Possible difficulties are: easy, medium, hard, impossible. Default is medium.")
+	sizeFlag := flag.String("size", "30x30", "This sets the size of the game table. It has to be formatted like this: 'WIDTH'x'HEIGHT'!")
+	flag.Parse()
+
+	if flag.Parsed() {
+		switch *diffFlag {
+		case "easy":
+			game_difficulty = easy
+
+		case "medium":
+			game_difficulty = medium
+
+		case "hard":
+			game_difficulty = hard
+
+		case "impossible":
+			game_difficulty = impossible
+		default:
+			game_difficulty = medium
+		}
+
+		sizeSlice := strings.Split(*sizeFlag, "x")
+		if len(sizeSlice) > 1 {
+			width, err1 := strconv.Atoi(sizeSlice[0])
+			height, err2 := strconv.Atoi(sizeSlice[1])
+			if err1 != nil || err2 != nil {
+				table_width = standard_width
+				table_height = standard_height
+			} else {
+				if width > 0 && height > 0 {
+					table_width = width
+					table_height = height
+				} else {
+					table_width = standard_width
+					table_height = standard_height
+				}
+			}
+		} else {
+			table_width = standard_width
+			table_height = standard_height
+		}
+	}
+
 	game_state = st_running
-	game_difficulty = easy
 
 	switch game_difficulty {
 	case easy:
 		body_gain = 1
-		FPS = 3
+		FPS = 4
 		game_title += " - EASY"
 	case medium:
 		body_gain = 3
-		FPS = 5
+		FPS = 6
 		game_title += " - MEDIUM"
 	case hard:
 		body_gain = 10
-		FPS = 7
+		FPS = 8
 		game_title += " - HARD"
 	case impossible:
 		body_gain = 15
@@ -203,7 +253,7 @@ mainloop:
 	fmt.Print(cursor.MoveTo(0, 0))
 	fmt.Printf("\n\n\t\tYOU LOST\n\t\t---------\n\t\tScore: %v\n\n", s.score)
 	fmt.Printf("\nPress any key to close the game...")
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 	termbox.PollEvent()
 
 }
