@@ -1,5 +1,5 @@
-#gosnake
-##How to install
+# gosnake
+## How to install
 To use this repository just clone it:  
 `git clone https://github.com/handsome-max/gosnake.git`  
 Then just run the exectutable.  
