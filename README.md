@@ -14,5 +14,5 @@ Basically you have to create a folder struction like this:
 Where gosnake is exactly this repository.
 
 After this all you have to do is install go and setup your *GOPATH* variable  
-f.e. `export $GOPATH=$HOME/go/src/gosnake`  
+f.e. `export $GOPATH=$HOME/go/`  
 If you want to have your GO-Workspace under your home. But read more for this on the official [golang setup guide](https://golang.org/doc/install#install "Go installation guide").
