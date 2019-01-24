@@ -16,3 +16,11 @@ Where gosnake is exactly this repository.
 After this all you have to do is install go and setup your *GOPATH* variable  
 f.e. `export $GOPATH=$HOME/go/`  
 If you want to have your GO-Workspace under your home. But read more for this on the official [golang setup guide](https://golang.org/doc/install#install "Go installation guide").
+
+## TODO:  
+- implement highscore saving
+- user defined game characters
+- balance difficulties
+- mode with open borders -> no wall collision but teleport to opposite site
+- 2 player mode?
+
