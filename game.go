@@ -93,13 +93,6 @@ func (table *Game_table) updateGameTable(s Snake, fruit *Fruit) {
 }
 
 func main() {
-	//this has to called first to init and finalize key eventing
-	err := termbox.Init()
-	if err != nil {
-		panic(err)
-	}
-	defer termbox.Close()
-
 	//get command line flags
 	//	-difficulty=...
 	//	-size=AxB
@@ -144,7 +137,16 @@ func main() {
 			table_width = standard_width
 			table_height = standard_height
 		}
+	} else {
+		panic("error")
 	}
+
+	//this has to called first to init and finalize key eventing
+	err := termbox.Init()
+	if err != nil {
+		panic(err)
+	}
+	defer termbox.Close()
 
 	game_state = st_running
 
