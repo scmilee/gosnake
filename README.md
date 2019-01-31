@@ -11,9 +11,9 @@ Screenshot1			  | Screenshot2
 Control the snake with the arrow keys.
 Pause with 'p'.
 Close the game with 'ESC'
-There are no real ingame options but here are some command line options:
-`-size` - set game table size (don't make it to big or it gets to easy)
-`-difficulty` - set game difficulty (options are: easy, medium, hard, impossible)
+There are no real ingame options but here are some command line options: 
+- `-size` -> set game table size (don't make it to big or it gets to easy) 
+- `-difficulty` -> set game difficulty (options are: easy, medium, hard, impossible)
 
 
 ## How to install
