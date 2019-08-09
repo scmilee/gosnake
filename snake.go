@@ -1,11 +1,14 @@
 package main
-
+import (
+	"io/ioutil"
+)
 // enums for snake movement
 /*
 		0
 	3		1
 		2
 */
+
 const (
 	up    int8 = 0
 	right int8 = 1
@@ -17,12 +20,16 @@ type Snake struct {
 	body      []Point
 	direction int8
 	score     int
+	highScore []byte
 }
 
 func (s *Snake) resetSnake() {
 	s.score = 0
 	s.direction = right
 	s.body = append(s.body, Point{table_width / 2, table_height / 2})
+	highScore, err := ioutil.ReadFile("./highscore")
+	check(err)
+	s.highScore = highScore
 }
 
 func (s *Snake) move() {
