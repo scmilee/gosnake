@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"github.com/ahmetalpbalkan/go-cursor"
 	"github.com/nsf/termbox-go"
 	"math/rand"
@@ -89,6 +90,12 @@ func (table *Game_table) updateGameTable(s Snake, fruit *Fruit) {
 				(*table)[s.body[0].y][s.body[0].x] = head_char
 			}
 		}
+	}
+}
+	
+func check(e error) {
+	if e != nil {
+			panic(e)
 	}
 }
 
@@ -256,6 +263,7 @@ mainloop:
 	fmt.Printf("\n\n\t\tYOU LOST\n\t\t---------\n\t\tScore: %v\n\n", s.score)
 	fmt.Printf("\nPress any key to close the game...")
 	time.Sleep(100 * time.Millisecond)
+	updateHighScore(&s)
 	termbox.PollEvent()
 
 }
@@ -306,7 +314,7 @@ func spawnFruitTicker(fruit_chan chan bool) {
 func (table Game_table) drawTable(s *Snake) {
 	fmt.Print(cursor.ClearEntireScreen())
 	fmt.Print(cursor.MoveTo(0, 0))
-	fmt.Printf("\t\t%v\nScore: %v\n", game_title, s.score)
+	fmt.Printf("\t\t%v\nHighScore: %s\nScore: %v\n", game_title,string(s.highScore),s.score)
 
 	for x := range table {
 		for y := range table[x] {
@@ -321,5 +329,15 @@ func (table *Game_table) resetGameTable() {
 	*table = make([][]byte, table_height)
 	for i := range *table {
 		(*table)[i] = make([]byte, table_width)
+	}
+}
+
+func updateHighScore(s *Snake) {
+	intScore, err := strconv.Atoi(string(s.highScore))
+	check(err)
+	if s.score > intScore {
+		d1 := []byte(fmt.Sprintf("%v", s.score))
+		errd1 := ioutil.WriteFile("./highscore", d1, 0644)
+		check(errd1)
 	}
 }
